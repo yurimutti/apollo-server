@@ -1,19 +1,66 @@
 import { ApolloServer } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
 
-import { typeDefs } from "./schema";
+const typeDefs = `#graphql 
+  type Product {
+    id: ID!
+    name: String!
+    price: Int
+    description: String
+    isActive: Boolean
+  }
 
-// The ApolloServer constructor requires two parameters: your schema
-// definition and your set of resolvers.
+  type Categories {
+    id: ID!
+    name: String!
+  }
+
+  type Brands {
+    id: ID!
+    name: String!
+  }
+
+  type Query {
+    products: [Product]
+    categories: [Categories]
+    brands: [Brands]
+  }
+`;
+
+const resolvers = {
+  Query: {
+    products: () => [
+      {
+        id: "1",
+        name: "Product 1",
+        price: 100,
+        description: "Description 1",
+        isActive: true,
+      },
+      {
+        id: "2",
+        name: "Product 2",
+        price: 200,
+        description: "Description 2",
+        isActive: false,
+      },
+    ],
+    categories: () => [
+      { id: "1", name: "Category 1" },
+      { id: "2", name: "Category 2" },
+    ],
+    brands: () => [
+      { id: "1", name: "Brand 1" },
+      { id: "2", name: "Brand 2" },
+    ],
+  },
+};
+
 const server = new ApolloServer({
   typeDefs,
   resolvers,
 });
 
-// Passing an ApolloServer instance to the `startStandaloneServer` function:
-//  1. creates an Express app
-//  2. installs your ApolloServer instance as middleware
-//  3. prepares your app to handle incoming requests
 const { url } = await startStandaloneServer(server, {
   listen: { port: 4000 },
 });
